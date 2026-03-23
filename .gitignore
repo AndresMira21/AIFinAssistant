@@ -1,0 +1,33 @@
+# Archivos de entorno y seguridad (¡NUNCA SUBIR EL .env!)
+.env
+.env.*
+! .env.example
+
+# Base de datos local
+db.sqlite3
+*.sqlite3
+
+# Compilados de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos Virtuales
+venv/
+env/
+.venv/
+.env_folder/
+
+# Archivos estáticos recolectados (Render los genera en el build)
+staticfiles/
+static_root/
+
+# Archivos de prueba temporales
+test_deepseek.py
+test_gemini.py
+
+# Herramientas del sistema y editores
+.vscode/
+.idea/
+*.swp
+.DS_Store

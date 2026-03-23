@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: financial-assistant
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn financial_assistant.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: DEBUG
+        value: False
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CHATBOT_API_KEY
+        value: placeholder-key

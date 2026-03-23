@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="glass-card">
+    <div class="tabs">
+        <button class="tab-btn {% if active_tab == 'npv' %}active{% endif %}" data-target="npv">Valor Actual Neto</button>
+        <button class="tab-btn {% if active_tab == 'irr' %}active{% endif %}" data-target="irr">Tasa Interna de Retorno</button>
+        <button class="tab-btn {% if active_tab == 'compound' %}active{% endif %}" data-target="compound">Interés Compuesto</button>
+        <button class="tab-btn {% if active_tab == 'amortization' %}active{% endif %}" data-target="amortization">Amortización (Francés)</button>
+    </div>
+
+    <!-- NPV TAB -->
+    <div id="npv" class="tab-content {% if active_tab == 'npv' %}active{% endif %}">
+        <h2>Cálculo del VAN</h2>
+        <p style="color:var(--text-muted); margin-bottom:1rem;">Calcula el Valor Actual Neto descontando los flujos a una tasa requerida.</p>
+        
+        <form method="post" action="{% url 'calculator:npv' %}">
+            {% csrf_token %}
+            {% for field in npv_form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.errors %}
+                        <div style="color: var(--danger); font-size: 0.9em; margin-top: 0.2rem;">{{ field.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn">Calcular VAN</button>
+        </form>
+
+        {% if npv_error %}
+            <div class="result-box error"><strong>Error:</strong> {{ npv_error }}</div>
+        {% elif npv_result %}
+            <div class="result-box">
+                <p>Resultado del Valor Actual Neto (VAN):</p>
+                <div class="result-value">{{ npv_result.value }} <span class="decimals">USD</span></div>
+                <p>{{ npv_result.interpretation }}</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- IRR TAB -->
+    <div id="irr" class="tab-content {% if active_tab == 'irr' %}active{% endif %}">
+        <h2>Cálculo de TIR</h2>
+        <p style="color:var(--text-muted); margin-bottom:1rem;">Estima la Tasa Interna de Retorno (TIR) usando el método de aproximación Newton-Raphson iterativo.</p>
+
+        <form method="post" action="{% url 'calculator:irr' %}">
+            {% csrf_token %}
+            {% for field in irr_form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.errors %}
+                        <div style="color: var(--danger); font-size: 0.9em; margin-top: 0.2rem;">{{ field.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn">Calcular TIR</button>
+        </form>
+
+        {% if irr_error %}
+            <div class="result-box error"><strong>Error:</strong> {{ irr_error }}</div>
+        {% elif irr_result %}
+            <div class="result-box">
+                <p>La Tasa Interna de Retorno calculada es:</p>
+                <div class="result-value">{{ irr_result.value }} <span class="decimals">({{ irr_result.percentage }}%)</span></div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- COMPOUND INTEREST TAB -->
+    <div id="compound" class="tab-content {% if active_tab == 'compound' %}active{% endif %}">
+        <h2>Interés Compuesto</h2>
+        <p style="color:var(--text-muted); margin-bottom:1rem;">Proyecta el crecimiento de un capital con capitalización periódica.</p>
+        
+        <form method="post" action="{% url 'calculator:compound' %}">
+            {% csrf_token %}
+            {% for field in ci_form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.errors %}
+                        <div style="color: var(--danger); font-size: 0.9em; margin-top: 0.2rem;">{{ field.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn">Calcular Interés</button>
+        </form>
+
+        {% if ci_error %}
+            <div class="result-box error"><strong>Error:</strong> {{ ci_error }}</div>
+        {% elif ci_result %}
+            <div class="result-box">
+                <p>Monto Final Acumulado:</p>
+                <div class="result-value">{{ ci_result.amount }}</div>
+                <ul style="list-style: none; margin-top: 1rem; color:var(--text-muted);">
+                    <li>Capital Inicial: <strong>{{ ci_result.principal }}</strong></li>
+                    <li>Intereses Ganados: <strong>{{ ci_result.interest_earned }}</strong></li>
+                    <li>Tasa Efectiva Anual: <strong>{% widthratio ci_result.effective_rate 1 100 %}%</strong> (aprox)</li>
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- AMORTIZATION TAB -->
+    <div id="amortization" class="tab-content {% if active_tab == 'amortization' %}active{% endif %}">
+        <h2>Sistema Francés</h2>
+        <p style="color:var(--text-muted); margin-bottom:1rem;">Genera una tabla de amortización con cuotas fijas (cuota constate).</p>
+        
+        <form method="post" action="{% url 'calculator:amortization' %}">
+            {% csrf_token %}
+            {% for field in amort_form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.errors %}
+                        <div style="color: var(--danger); font-size: 0.9em; margin-top: 0.2rem;">{{ field.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn">Generar Tabla</button>
+        </form>
+
+        {% if amort_error %}
+            <div class="result-box error"><strong>Error:</strong> {{ amort_error }}</div>
+        {% elif amort_result %}
+            <div class="result-box" style="margin-bottom: 1rem;">
+                <p>Cuota Fija a pagar por período:</p>
+                <div class="result-value">{{ amort_result.payment }}</div>
+                <p>Total pagado: {{ amort_result.total_paid }} (Intereses: {{ amort_result.total_interest }})</p>
+            </div>
+            
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="text-align:center;">Periodo</th>
+                            <th>Saldo Inicial</th>
+                            <th>Cuota Fija</th>
+                            <th>Interés</th>
+                            <th>Abono Capital</th>
+                            <th>Saldo Final</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in amort_result.table %}
+                        <tr>
+                            <td style="text-align:center; color:var(--text-muted);">{{ row.period }}</td>
+                            <td>{{ row.balance_start }}</td>
+                            <td>{{ row.payment }}</td>
+                            <td style="color:var(--danger);">{{ row.interest }}</td>
+                            <td style="color:var(--success);">{{ row.principal_paid }}</td>
+                            <td>{{ row.balance_end }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

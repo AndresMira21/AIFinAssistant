@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="glass-card chat-container">
+    <div class="chat-header" style="border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1rem;">
+        <h2>Asistente IAMath</h2>
+        <p style="color:var(--text-muted); font-size: 0.9em;">
+            Consulta dudas financieras o solicita explicaciones sobre VAN, TIR, Capitalización y Amortizaciones.
+        </p>
+    </div>
+
+    <!-- Chat display area -->
+    <div class="chat-history" id="chat-history">
+        <!-- Initial greeting -->
+        <div class="chat-msg msg-bot">
+            ¡Hola! Soy tu asistente financiero. Puedo explicarte conceptos como VAN, TIR, interés compuesto o sistemas de amortización. ¿En qué te puedo ayudar?
+        </div>
+    </div>
+
+    <!-- Input area -->
+    <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Escribe tu pregunta aquí..." autocomplete="off">
+        <button id="chat-send" class="btn" style="width: auto;">Enviar</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Config vars for JS -->
+<script>
+    const CHAT_API_URL = "{% url 'chatbot:chat_api' %}";
+</script>
+{% endblock %}
