@@ -334,6 +334,87 @@ td {
     padding: 1rem 2rem;
 }
 
+/* Chat Layout Redesign */
+.chat-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 1.5rem;
+    height: calc(100vh - 160px);
+}
+
+.chat-sidebar {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    overflow-y: hidden;
+}
+
+.session-list {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.session-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    border: 1px solid transparent;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.session-item:hover, .session-item.active {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: var(--primary);
+}
+
+.session-title {
+    font-size: 0.9rem;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: none;
+}
+
+.delete-session {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    opacity: 0;
+    transition: 0.2s;
+}
+
+.session-item:hover .delete-session {
+    opacity: 1;
+    color: var(--danger);
+}
+
+.chat-main {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+}
+
+.btn-new-chat {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    gap: 0.5rem;
+}
+
+.btn-new-chat:hover {
+    background: var(--primary);
+    color: white;
+}
+
 /* Animations */
 @keyframes fadeIn {
     from { opacity: 0; }
@@ -346,6 +427,17 @@ td {
 }
 
 /* Responsive */
+@media (max-width: 992px) {
+    .chat-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+    .chat-sidebar {
+        height: 200px;
+        overflow-y: auto;
+    }
+}
+
 @media (max-width: 768px) {
     .navbar {
         flex-direction: column;
@@ -354,10 +446,5 @@ td {
     .main-content {
         padding: 1rem;
     }
-    .glass-card {
-        padding: 1.5rem;
-    }
-    .tabs {
-        padding-bottom: 0.5rem;
-    }
 }
+
